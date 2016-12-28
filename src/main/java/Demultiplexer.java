@@ -1,5 +1,6 @@
 import java.util.concurrent.*;
-import static java.lang.Thread.sleep;
+
+import static java.lang.Thread.*;
 
 public class Demultiplexer {
     private ArrayBlockingQueue<Integer> resources = new ArrayBlockingQueue<Integer>(3);
@@ -25,13 +26,18 @@ public class Demultiplexer {
         }
     }
 
-    public synchronized void freeResource(Integer resourceId) {
-        resources.add(resourceId);
+    public void returnResource(Integer resourceId) {
+        synchronized (resources) {
+            resources.add(resourceId);
+        }
+        System.out.println("Resource " + resourceId + " has been returned.");
     }
 
     public void accept(int requestID) {
         long currentTimeMillis = System.currentTimeMillis();
         Integer resourceID = getResource(currentTimeMillis, 5);
+        Dispatcher dispatcher = new Dispatcher(this, requestID, resourceID);
+        dispatcher.createRequestHandler().start();
     }
 
 }
