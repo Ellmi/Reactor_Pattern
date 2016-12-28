@@ -1,4 +1,5 @@
 import java.util.concurrent.*;
+import static java.lang.Thread.sleep;
 
 public class Demultiplexer {
     private ArrayBlockingQueue<Integer> resources = new ArrayBlockingQueue<Integer>(3);
@@ -15,6 +16,11 @@ public class Demultiplexer {
                 throw new RuntimeException("Get resource timeout!");
             } else if (resources.size() > 0) {
                 return resources.poll();
+            }
+            try {
+                sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
